@@ -19,8 +19,41 @@ public class Zones {
      * Is DAG in Main is 1 when the number of zones equals the number of cells (no cycle), so you do not need a separate check.
      */
     public static int[] kosaraju(Input.Slides s) {
-        // TODO
-        return new int[s.n()];
+        int n = s.n();
+        int[][] out = Graphs.slidesFrom(s), in = Graphs.slidesInto(s);
+        boolean[] seen = new boolean[n];
+        int[] stack = new int[n], next = new int[n], finish = new int[n];
+        int finished = 0;
+        for (int root = 0; root < n; root++) {
+            if (seen[root]) continue;
+            int top = 0; stack[0] = root; seen[root] = true;
+            while (top >= 0) {
+                int u = stack[top];
+                if (next[u] == out[u].length) {
+                    finish[finished++] = u; top--;
+                } else {
+                    int v = s.to()[out[u][next[u]++]];
+                    if (!seen[v]) { seen[v] = true; stack[++top] = v; }
+                }
+            }
+        }
+        int[] zone = new int[n];
+        java.util.Arrays.fill(zone, -1);
+        int count = 0;
+        for (int i = n - 1; i >= 0; i--) {
+            int root = finish[i];
+            if (zone[root] != -1) continue;
+            int top = 0; stack[0] = root; zone[root] = count;
+            while (top >= 0) {
+                int u = stack[top--];
+                for (int edge : in[u]) {
+                    int v = s.from()[edge];
+                    if (zone[v] == -1) { zone[v] = count; stack[++top] = v; }
+                }
+            }
+            count++;
+        }
+        return zone;
     }
 
     /**
