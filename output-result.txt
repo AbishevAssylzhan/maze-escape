@@ -1,0 +1,13 @@
+Broken: 89
+Kept: 72
+Last broken wall: 131
+MST cost: 26896
+Heaviest broken wall: 672
+Path length: 19
+DFS visited: 64
+Dead ends: 30
+Zones: 90
+Largest zone: 1
+Is DAG: 1
+Flow stages: 15
+Fastest route cost: 29
