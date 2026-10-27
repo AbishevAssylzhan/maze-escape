@@ -63,7 +63,28 @@ public class Zones {
      * [1] the cost of the cheapest route from the zone of cell 0 to the zone of the last cell.
      */
     public static long[] routes(Input.Slides s, int[] zoneOf, int zoneCount) {
-        // TODO
-        return new long[]{0, 0};
+        // Collapse parallel slides by keeping their minimum weight.
+        java.util.List<java.util.Map<Integer, Integer>> dag = new java.util.ArrayList<>();
+        for (int z = 0; z < zoneCount; z++) dag.add(new java.util.HashMap<>());
+        for (int i = 0; i < s.count(); i++) {
+            int a = zoneOf[s.from()[i]], b = zoneOf[s.to()[i]];
+            if (a != b) dag.get(a).merge(b, s.time()[i], Math::min);
+        }
+        long[] distance = new long[zoneCount];
+        java.util.Arrays.fill(distance, Long.MAX_VALUE);
+        distance[zoneOf[0]] = 0;
+        int[] stages = new int[zoneCount];
+        java.util.Arrays.fill(stages, 1);
+        long longest = 0;
+        for (int a = 0; a < zoneCount; a++) {
+            longest = Math.max(longest, stages[a]);
+            for (var edge : dag.get(a).entrySet()) {
+                int b = edge.getKey();
+                stages[b] = Math.max(stages[b], stages[a] + 1);
+                if (distance[a] != Long.MAX_VALUE)
+                    distance[b] = Math.min(distance[b], distance[a] + edge.getValue());
+            }
+        }
+        return new long[]{longest, distance[zoneOf[s.n() - 1]]};
     }
 }
