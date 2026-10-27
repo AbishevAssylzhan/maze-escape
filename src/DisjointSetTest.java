@@ -24,8 +24,17 @@ public class DisjointSetTest {
         check(d.count() == 3, "3 sets: {0,1,2,3} {4} {5}");
         check(d.find(4) == 4 && d.find(5) == 5, "a single cell is its own root");
 
-        // TODO: add your own checks here
+        check(!d.union(4, 4), "self union returns false");
+        check(d.count() == 3, "self union preserves count");
+        DisjointSet chain = new DisjointSet(100000);
+        boolean allJoined = true;
+        for (int i = 1; i < 100000; i++) allJoined &= chain.union(i - 1, i);
+        check(allJoined && chain.count() == 1, "large chain joins into one set");
+        check(chain.connected(0, 99999), "chain endpoints connected");
+        check(!chain.union(99999, 0), "duplicate chain union");
+        check(new DisjointSet(0).count() == 0, "empty DSU");
 
         System.out.println(failed == 0 ? "All checks passed." : failed + " checks failed.");
+        if (failed > 0) throw new AssertionError("DSU checks failed");
     }
 }
